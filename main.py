@@ -35,6 +35,8 @@ def get_acces_token(usr,pws,type):
 		print '[!] I am a poketrainer..'
 		access_token= login.login_pokemon(usr,pws)
 		ltype='ptc'
+	dirty.accessToken = access_token
+	dirty.globalltype = ltype
 	return access_token,ltype
 	
 def main():
@@ -50,20 +52,20 @@ def main():
 	parser.add_argument("-t", "--type", help="Google/PTC", required=True)
 	parser.add_argument("-l", "--location", help="Location", required=True)
 	#parser.add_argument("-d", "--distance", help="Distance", required=True)
-	args = parser.parse_args()
-	if not args.username:
-		args.username = getpass("Username: ")
-	if not args.password:
-		args.password = getpass("Password: ")
-	if 'ptc' in args.type.lower() or 'goo' in args.type.lower():
-		#config.distance=args.distance
-		access_token,ltype=get_acces_token(args.username,args.password,args.type.lower())
+	dirty.argsStored = parser.parse_args()
+	if not dirty.argsStored.username:
+		dirty.argsStored.username = getpass("Username: ")
+	if not dirty.argsStored.password:
+		dirty.argsStored.password = getpass("Password: ")
+	if 'ptc' in dirty.argsStored.type.lower() or 'goo' in dirty.argsStored.type.lower():
+		#config.distance=dirty.argsStored.distance
+		access_token,ltype=get_acces_token(dirty.argsStored.username,dirty.argsStored.password,dirty.argsStored.type.lower())
 		if access_token is not None:
-			dirty.start_private_show(access_token,ltype,args.location)
+			dirty.start_private_show(access_token,ltype,dirty.argsStored.location)
 		else:
 			print '[-] access_token bad'
 	else:
-		print '[!] used type "%s" only Google or PTC valid'%(args.type.lower())
+		print '[!] used type "%s" only Google or PTC valid'%(dirty.argsStored.type.lower())
 	
 if __name__ == '__main__':
 	main()
