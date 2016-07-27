@@ -2,7 +2,7 @@
 Pokémon GO API in Python
 
 # IMPORTANT!
-Fixed some code? Improved a function? Cleaned the mess? Other fixes? Sumbit a pull-request!
+Fixed some code? Improved a function? Cleaned the mess? Other fixes? Submit a pull-request!
 
 # Some Info:
 1. GitHub issues are mainly for bug reporting.  
