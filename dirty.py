@@ -4,9 +4,26 @@ import time
 import pokemon_pb2
 import location
 import config
+import main
 from multiprocessing import Process
 
 multi=False
+
+argsStored = []
+startTime = time.time()
+accessToken=None
+globalltype=None
+
+def restartProcess():
+	global argsStored
+	if accessToken is not None and globalltype is not None:
+		start_private_show(accessToken,globalltype,argsStored.location)
+	else:
+		access_token,ltype=main.get_acces_token(argsStored.username,argsStored.password,argsStored.type.lower())
+		if access_token is not None:
+			start_private_show(access_token,ltype,argsStored.location)
+		else:
+			print '[-] access_token bad'
 
 def start_private_show(access_token,ltype,loc):
 	location.set_location(loc)
@@ -30,11 +47,11 @@ def split_list(a_list):
 	half = len(a_list)/2
 	return a_list[:half], a_list[half:]
 	
-def work_half_list(part,local_ses,new_rcp_point):
+def work_half_list(part,ses,new_rcp_point):
 	for t in part:
 		if config.debug:
 			print '[!] farming pokestop..'
-		work_with_stops(t,local_ses.ses,new_rcp_point)
+		work_with_stops(t,ses,new_rcp_point)
 	
 def work_stop(local_ses,new_rcp_point):
 	proto_all=logic.all_stops(local_ses)
@@ -82,6 +99,7 @@ def work_with_stops(current_stop,ses,new_rcp_point):
 				print "[!] charging"
 			elif st==1:
 				print "[!] walking.."
+				expPerHour()
 				time.sleep(14)
 				work_with_stops(current_stop,ses,new_rcp_point)
 			else:
@@ -89,4 +107,16 @@ def work_with_stops(current_stop,ses,new_rcp_point):
 		else:
 			print '[-] tmp_api empty'
 	except:
-		print '[-] error work_with_stops'
+		print '[-] error work_with_stops - Trying to restart process'
+		restartProcess()
+
+def expPerHour():
+	diff = time.time() - startTime
+	minutesRun = diff/60.
+	hoursRun = minutesRun/60.
+	earned = float(config.earned_xp)
+	if hoursRun > 0:
+		expHour = int(earned/hoursRun)
+	else:
+		expHour = "n/a"
+	print "[!] Gained: %s (%s exp/h)"%(config.earned_xp,expHour)
